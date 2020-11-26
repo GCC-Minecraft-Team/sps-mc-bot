@@ -73,7 +73,7 @@ exports.GetTeam = (account) => {
             //This should really be made static somehow, instead of create a new team for each member
             const team = Classes.Team(result[0]["teams"][0]);
 
-            Teams.set(account.GetOauthId(), team);
+            Teams.set(account.GetOAuthId(), team);
             resolve(team);
         });
     });
@@ -84,7 +84,7 @@ exports.BufToUUID = (buffer) => {
     let output = "";
 
     for(let i = 0; i < str.length; i++){
-        if([8, 12, 16, 20, 32].includes(output.length)) output+="-";
+        if([8, 13, 18, 23, 36].includes(output.length)) output+="-";
         output+=str[i];
     }
 

@@ -15,9 +15,10 @@ exports.Team = data => {
             return new Promise(async (resolve, reject) => {
                 let members = [];
 
-                data["members"].forEach(member => {
-                    members.push(database.GetAccountInfoSPS(database.BufToUUID(member.buffer)));
-                });
+                for (const member of data["members"]) {
+                    console.log(database.BufToUUID(member.buffer));
+                    members.push(await database.GetAccountInfoSPS(database.BufToUUID(member.buffer)));
+                }
 
                 resolve(members);
             });

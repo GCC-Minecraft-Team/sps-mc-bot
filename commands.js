@@ -16,6 +16,10 @@ exports.run = (msg, content, mention) => {
         case "help":
             helpCommand(msg, args, mention);
             break;
+
+        case "test":
+            database.GetAccountInfo("test").then(x => x.GetTeam().then(y => y.GetMembers().then(z => console.log(z)).catch(e2 => console.log(e2))).catch(e1 => console.log(e1))).catch(e => console.log(e));
+            break;
     }
 }
 
