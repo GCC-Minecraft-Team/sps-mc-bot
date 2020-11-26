@@ -1,4 +1,5 @@
 const discord = require("discord.js");
+const crypto = require("crypto");
 
 const link = require("./link");
 const database = require("./database");
@@ -11,32 +12,55 @@ exports.run = (msg, content, mention) => {
         case "link":
             linkCommand(msg, args, mention);
             break;
+
+        case "help":
+            helpCommand(msg, args, mention);
+            break;
     }
 }
 
+function getMention(msg, mention, num, fallback){
+    if(msg.mentions.members.size < num+(mention ? 2 : 1)) return fallback ? fallback : null;
+    return msg.mentions.members.array()[mention ? num+1 : num];
+}
+
+function helpCommand(msg, args, mention){
+    const p = process.env.PREFIX;
+
+    return msg.channel.send(new discord.MessageEmbed()
+        .setTitle("Help")
+        .addField(p+"link", "Link your SPS and Discord accounts to use the bot's personalized commands.")
+    );
+}
+
 function linkCommand(msg, args, mention){
-    if(args.length < 1){
-        return msg.channel.send(new discord.MessageEmbed().setTitle("Invalid Syntax").setDescription("Syntax: "+process.env.PREFIX+"link <token>"));
+    try {
+        crypto.randomBytes(16, (err, buf) => {
+            if (err) {
+                console.error(err);
+                return new msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
+            }
+
+            const token = buf.toString("hex");
+            if (link.linksDID.has(msg.author.id)) {
+                const oldToken = link.linksDID.take(msg.author.id);
+                link.links.del(oldToken);
+            }
+
+            link.linksDID.set(msg.author.id, token);
+            link.links.set(token, msg.author.id);
+
+            msg.author.send("Run ``/link " + token + "`` ingame to link your minecraft and discord accounts.");
+        });
     }
-
-    const token = args[0].trim();
-
-    if(msg.channel.type !== "dm"){
-        if(link.links.has(token)) link.links.del(token);
-        if(msg.deletable) msg.delete();
-        return msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("This command can only be ran in DMs. This token has been invalidated. Please generate a new one in game."));
-    }
-
-    if(!link.links.has(token)){
-        return msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("This command can only be ran in DMs."));
-    }
-
-    const uuid = link.links.take(token);
-
-    database.Link(uuid, msg.author.id).then(() => {
-        msg.channel.send(new discord.MessageEmbed().setTitle("Success").setDescription("Your discord and MC/SPS accounts have been linked!"));
-    }).catch(e => {
+    catch(e){
         console.error(e);
-        msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("There was an error. Please try again."));
-    });
+        return new msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
+    }
+}
+
+function teamCommand(msg, args, mention){
+    const user = getMention(msg, mention, 0, msg.member);
+
+
 }
