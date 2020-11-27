@@ -32,3 +32,5 @@ app.post("/link", (req, res) => {
         res.send("E");
     }
 });
+
+app.listen(process.env.PORT);
