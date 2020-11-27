@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 
 const links = require("./link");
 const database = require("./database");
+const index = require("./index");
 
 const app = express();
 
@@ -21,7 +22,6 @@ app.post("/link", (req, res) => {
         links.linksDID.del(discordId);
 
         database.Link(uuid, discordId).then(() => {
-
             res.send("S");
         }).catch(e => {
             console.error(e);
@@ -31,6 +31,10 @@ app.post("/link", (req, res) => {
         console.error(e);
         res.send("E");
     }
+});
+
+app.post("/postcount", (req, res) => {
+    index.client.user.setPresence({ game: { name: req.body+"/50 players" , type: 'WATCHING' }, status: 'online' });
 });
 
 app.listen(process.env.BOT_PORT);

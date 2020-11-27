@@ -7,6 +7,7 @@ const commands = require("./commands");
 const webserver = require("./webserver");
 
 const client = new discord.Client();
+exports.client = client;
 
 client.on("message", msg => {
     if (msg.author.bot) return;
