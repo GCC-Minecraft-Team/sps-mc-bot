@@ -11,7 +11,7 @@ let client;
 let usersCol;
 let wgCol;
 
-MongoClient.connect(process.env.CONURL, function(err, c) {
+MongoClient.connect(process.env.CONURL, function (err, c) {
     if (err) throw err;
 
     client = c;
@@ -22,9 +22,9 @@ MongoClient.connect(process.env.CONURL, function(err, c) {
 
 exports.Link = (uuid, discordId) => {
     return new Promise((resolve, reject) => {
-        usersCol.updateOne({mcUUID : uuid}, {$set: {discordId}}, function(err, result) {
-            if(err) return reject(err);
-            if(AccountCache.has(discordId)) AccountCache.del(discordId);
+        usersCol.updateOne({mcUUID: uuid}, {$set: {discordId}}, function (err, result) {
+            if (err) return reject(err);
+            if (AccountCache.has(discordId)) AccountCache.del(discordId);
             resolve();
         });
     });
@@ -32,11 +32,12 @@ exports.Link = (uuid, discordId) => {
 
 exports.GetAccountInfo = (discordId) => {
     return new Promise((resolve, reject) => {
+        if (discordId === null) return null;
         if (AccountCache.has(discordId)) return resolve(AccountCache.get(discordId));
 
-        usersCol.find({discordId}).toArray(function(err, result) {
-            if(err) return reject(err);
-            if(result.length < 1) return resolve(null);
+        usersCol.find({discordId}).toArray(function (err, result) {
+            if (err) return reject(err);
+            if (result.length < 1) return resolve(null);
 
             const account = Classes.Account(result[0]);
 
@@ -48,11 +49,12 @@ exports.GetAccountInfo = (discordId) => {
 
 exports.GetAccountInfoSPS = (spsUUID) => {
     return new Promise((resolve, reject) => {
+        if (spsUUID === null) return null;
         if (AccountSPSCache.has(spsUUID)) return resolve(AccountSPSCache.get(spsUUID));
 
-        usersCol.find({oAuthId: spsUUID}).toArray(function(err, result) {
-            if(err) return reject(err);
-            if(result.length < 1) return resolve(null);
+        usersCol.find({oAuthId: spsUUID}).toArray(function (err, result) {
+            if (err) return reject(err);
+            if (result.length < 1) return resolve(null);
 
             const account = Classes.Account(result[0]);
 
@@ -64,11 +66,11 @@ exports.GetAccountInfoSPS = (spsUUID) => {
 
 exports.GetTeam = (account) => {
     return new Promise((resolve, reject) => {
-        if(Teams.has(account.GetOAuthId())) return resolve(Teams.get(account.GetOAuthId()));
+        if (Teams.has(account.GetOAuthId())) return resolve(Teams.get(account.GetOAuthId()));
 
-        wgCol.find({'teams.members': Binary(exports.UUIDToBuf(account.GetOAuthId()), 3)}, {"teams.$": 1, "teams.members.$": 1}).toArray(function(err, result) {
-            if(err) return reject(err);
-            if(result.length < 1) return resolve(null);
+        wgCol.find({'teams.members': Binary(exports.UUIDToBuf(account.GetOAuthId()), 3)}, {"teams.$": 1, "teams.members.$": 1}).toArray(function (err, result) {
+            if (err) return reject(err);
+            if (result.length < 1) return resolve(null);
 
             const team = Classes.Team(result[0]["teams"][0]);
 
@@ -82,9 +84,9 @@ exports.BufToUUID = (buffer) => {
     const str = [...buffer.toString("hex")];
     let output = "";
 
-    for(let i = 0; i < str.length; i++){
-        if([8, 13, 18, 23, 36].includes(output.length)) output+="-";
-        output+=str[i];
+    for (let i = 0; i < str.length; i++) {
+        if ([8, 13, 18, 23, 36].includes(output.length)) output += "-";
+        output += str[i];
     }
 
     return output;

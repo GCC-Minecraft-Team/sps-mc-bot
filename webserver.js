@@ -26,8 +26,7 @@ app.post("/link", (req, res) => {
             console.error(e);
             res.send("E2");
         });
-    }
-    catch(e){
+    } catch (e) {
         console.error(e);
         res.send("E");
     }
