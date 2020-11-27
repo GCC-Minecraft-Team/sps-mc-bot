@@ -21,6 +21,7 @@ app.post("/link", (req, res) => {
         links.linksDID.del(discordId);
 
         database.Link(uuid, discordId).then(() => {
+
             res.send("S");
         }).catch(e => {
             console.error(e);

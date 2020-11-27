@@ -21,7 +21,7 @@ client.on("message", msg => {
 
 function handleMessage(msg) {
     if (msg.channel.id === process.env.BROADCAST_CHANNEL) {
-        axios.post("http://" + process.env.SERVER_HOST + ":" + process.env.SERVER_PORT + "/broadcast", "§d[DISCORD] " + msg.member.displayName + ": " + msg.content.trim());
+        axios.post("http://" + process.env.SERVER_HOST + ":" + process.env.SERVER_PORT + "/broadcast", "§d[DISCORD] " + msg.member.displayName + ": " + msg.content.trim().replace(/<:(.+):.+>/g, (x, y) => ":"+y+":"));
         return;
     }
 }
