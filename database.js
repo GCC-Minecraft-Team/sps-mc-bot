@@ -11,11 +11,11 @@ let client;
 let usersCol;
 let wgCol;
 
-MongoClient.connect(process.env.CONURL, function (err, c) {
+MongoClient.connect(process.env.DB_URI, function (err, c) {
     if (err) throw err;
 
     client = c;
-    db = client.db(process.env.DATABASE);
+    db = client.db(process.env.DB_NAME);
     usersCol = db.collection("users");
     wgCol = db.collection("worldgroups");
 });
