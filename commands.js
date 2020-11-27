@@ -42,8 +42,10 @@ function helpCommand(msg, args, mention) {
 
     return msg.channel.send(new discord.MessageEmbed()
         .setTitle("Help")
-        .addField(p + "link", "Link your SPS and Discord accounts to use the bot's personalized commands.")
-        .addField(p + "info [@user]", "Get info about a certain person.")
+        .addField(p + "help", "View every command the bot has.", true)
+        .addField(p + "link", "Link your SPS and Discord accounts to use the bot's personalized commands.", true)
+        .addField(p + "unlink", "Unlink your SPS and Discord accounts.", true)
+        .addField(p + "info [@user]", "Get info about a certain person.", true)
     );
 }
 
