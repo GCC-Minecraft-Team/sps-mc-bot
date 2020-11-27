@@ -34,7 +34,8 @@ app.post("/link", (req, res) => {
 });
 
 app.post("/postcount", (req, res) => {
-    index.client.user.setPresence({ game: { name: req.body+"/50 players" , type: 'WATCHING' }, status: 'online' });
+    index.client.user.setPresence({ activity: { name: req.body+"/50 players" , type: 'WATCHING' }, status: 'online' });
+    res.send("");
 });
 
 app.listen(process.env.BOT_PORT);
