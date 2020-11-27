@@ -70,7 +70,6 @@ exports.GetTeam = (account) => {
             if(err) return reject(err);
             if(result.length < 1) return resolve(null);
 
-            //This should really be made static somehow, instead of create a new team for each member
             const team = Classes.Team(result[0]["teams"][0]);
 
             Teams.set(account.GetOAuthId(), team);

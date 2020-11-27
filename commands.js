@@ -17,8 +17,8 @@ exports.run = (msg, content, mention) => {
             helpCommand(msg, args, mention);
             break;
 
-        case "test":
-            database.GetAccountInfo("test").then(x => x.GetTeam().then(y => y.GetMembers().then(z => console.log(z)).catch(e2 => console.log(e2))).catch(e1 => console.log(e1))).catch(e => console.log(e));
+        case "info":
+            infoCommand(msg, args, mention);
             break;
     }
 }
@@ -34,6 +34,7 @@ function helpCommand(msg, args, mention){
     return msg.channel.send(new discord.MessageEmbed()
         .setTitle("Help")
         .addField(p+"link", "Link your SPS and Discord accounts to use the bot's personalized commands.")
+        .addField(p+"info [@user]", "Get info about a certain person.")
     );
 }
 
@@ -42,7 +43,7 @@ function linkCommand(msg, args, mention){
         crypto.randomBytes(16, (err, buf) => {
             if (err) {
                 console.error(err);
-                return new msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
+                return msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
             }
 
             const token = buf.toString("hex");
@@ -59,12 +60,29 @@ function linkCommand(msg, args, mention){
     }
     catch(e){
         console.error(e);
-        return new msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
+        return msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
     }
 }
 
-function teamCommand(msg, args, mention){
+async function infoCommand(msg, args, mention){
     const user = getMention(msg, mention, 0, msg.member);
 
+    database.GetAccountInfo(user.user.id).then(account => {
+        if(account === null){
+            return new msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("This user does not have their discord linked to their SPS account. Run the ``"+process.env.PREFIX+"link`` to link your discord and SPS accounts."));
+        }
 
+        account.GetTeam().then(team => {
+            let embed = new discord.MessageEmbed().setTitle(account.GetMCName()).setDescription("Info for "+account.GetMCName()).addField("Banned", account.IsBanned() ? "Yes" : "No", true);
+            if(team !== null) embed.addField("Team", embed.GetName(), true);
+
+            msg.channel.send(embed);
+        }).catch(e => {
+            console.error(e);
+            msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
+        })
+    }).catch(e => {
+        console.error(e);
+        msg.channel.send(new discord.MessageEmbed().setTitle("Error").setDescription("An error occurred. Please try again."));
+    });
 }
