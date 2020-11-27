@@ -23,7 +23,8 @@ exports.run = (msg, content, mention) => {
                 break;
 
             case "unlink":
-
+                unLinkCommand(msg, args, mention);
+                break;
         }
     } catch (e) {
         console.error("cmd-" + command, e);
