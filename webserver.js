@@ -32,4 +32,4 @@ app.post("/link", (req, res) => {
     }
 });
 
-app.listen(process.env.PORT);
+app.listen(process.env.BOT_PORT);
